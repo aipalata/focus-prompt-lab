@@ -1,0 +1,13 @@
+{
+  "name": "focus-prompt-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env.local server.mjs",
+    "build": "node scripts/build.mjs"
+  }
+}

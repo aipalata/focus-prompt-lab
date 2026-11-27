@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#20372c">
+  <title>Фокус — лаборатория промптов</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Фокус<small>Лаборатория промптов</small></span></div>
+      <div class="connection" id="connection" hidden><span></span> <span id="connection-text"></span></div>
+    </div>
+  </header>
+  <div class="page">
+    <div class="intro">
+      <div>
+        <p class="eyebrow">Школа предметной фотографии</p>
+        <h1>Проверка промпта продавца</h1>
+      </div>
+      <button type="button" class="run" id="run" hidden>Запустить в OpenAI <span aria-hidden="true">↗</span></button>
+    </div>
+    <p id="notice" role="status" class="notice" hidden></p>
+    <main id="workspace" hidden>
+      <aside class="sidebar">
+        <h2>Сценарии</h2>
+        <nav id="scenarios" aria-label="Сценарии клиентов"></nav>
+        <details class="offer">
+          <summary>Курсы и условия</summary>
+          <div id="offer"></div>
+        </details>
+      </aside>
+
+      <div class="main-content">
+        <section class="comparison" aria-labelledby="comparison-heading">
+          <div class="comparison-heading">
+            <h2 id="comparison-heading">Сравнение версий</h2>
+            <p>Сохранённые оценки · из 6</p>
+          </div>
+          <div id="comparison" class="comparison-items"></div>
+        </section>
+
+        <section class="workbench" aria-labelledby="scenario-title">
+          <div class="scenario-header">
+            <div>
+              <p class="eyebrow" id="scenario-type"></p>
+              <h2 id="scenario-title"></h2>
+              <p id="scenario-goal" class="scenario-goal"></p>
+            </div>
+            <div class="version" role="group" aria-label="Версия промпта">
+              <button type="button" id="initial">Исходный</button>
+              <button type="button" id="final">Финальный</button>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel dialog-panel" aria-labelledby="dialog-heading">
+              <div class="panel-heading">
+                <h3 id="dialog-heading">Диалог</h3>
+                <span class="subtle" id="run-type"></span>
+              </div>
+              <ol id="dialog"></ol>
+              <button type="button" class="text-button" id="saved" hidden>Вернуться к результату отчёта</button>
+              <details class="prompt" id="prompt-details">
+                <summary>Системный промпт продавца</summary>
+                <p id="prompt"></p>
+              </details>
+            </section>
+
+            <section class="panel rating-panel" aria-labelledby="rating-heading">
+              <div class="panel-heading">
+                <h3 id="rating-heading">Оценка Sol</h3>
+                <span class="subtle" id="judge-model"></span>
+              </div>
+              <div id="rating"></div>
+              <details class="scale">
+                <summary>Как выставляется оценка</summary>
+                <p id="rubric"></p>
+              </details>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
