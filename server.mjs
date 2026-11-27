@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
-import { evaluate, LabError, rubric, runDialog } from './lab.mjs'
+import { experimentView, runSelectedScenario } from './experiment-service.mjs'
 
 const port = Number(process.env.PORT ?? 4173)
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Укажите допустимый PORT.')
@@ -24,11 +24,6 @@ function reply(res, status, body, type = 'application/json; charset=utf-8') {
   res.end(type.startsWith('application/json') ? JSON.stringify(body) : body)
 }
 
-async function getExperiment() {
-  const file = await readFile(new URL('./data/experiment.json', import.meta.url), 'utf8')
-  return JSON.parse(file)
-}
-
 async function readRunInput(req) {
   if (!/^application\/json(?:;|$)/i.test(req.headers['content-type'] ?? '')) return
   let body = ''
@@ -43,8 +38,6 @@ async function readRunInput(req) {
   }
 }
 
-let running = false
-
 const server = createServer(async (req, res) => {
   try {
     const { host, origin } = req.headers
@@ -55,30 +48,16 @@ const server = createServer(async (req, res) => {
       return reply(res, 200, await readFile(new URL(`./public/${file}`, import.meta.url)), type)
     }
     if (req.method === 'GET' && path === '/api/experiment') {
-      return reply(res, 200, { ...await getExperiment(), rubric, canRun: Boolean(process.env.OPENAI_API_KEY) })
+      return reply(res, 200, experimentView())
     }
     if (req.method === 'POST' && path === '/api/run') {
       if (origin !== `http://${host}`) return reply(res, 403, { error: 'Запускайте прогон из приложения.' })
-      const input = await readRunInput(req)
-      const experiment = await getExperiment()
-      const scenario = experiment.scenarios.find(item => item.id === input?.scenario)
-      const version = input?.version
-      if (!scenario || !['initial', 'final'].includes(version) || (scenario.holdout && version !== 'final')) {
-        return reply(res, 400, { error: 'Для этого сценария версия недоступна.' })
-      }
-      if (running) return reply(res, 409, { error: 'Дождитесь завершения текущего прогона.' })
-      running = true
-      try {
-        const dialog = await runDialog(scenario, experiment[version])
-        return reply(res, 200, { version, dialog, grade: await evaluate(scenario, dialog) })
-      } finally {
-        running = false
-      }
+      const { status, body } = await runSelectedScenario(await readRunInput(req))
+      return reply(res, status, body)
     }
     reply(res, 404, { error: 'Страница не найдена.' })
   } catch (error) {
     if (res.destroyed) return
-    if (error instanceof LabError) return reply(res, 502, { error: error.message })
     console.error(error.code ?? error.name)
     reply(res, 500, { error: 'Приложение не смогло обработать запрос.' })
   }

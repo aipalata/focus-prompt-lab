@@ -3,9 +3,9 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/api/experiment", "destination": "/experiment.json" }
-  ],
+  "functions": {
+    "api/run.mjs": { "maxDuration": 300 }
+  },
   "headers": [
     {
       "source": "/(.*)",
